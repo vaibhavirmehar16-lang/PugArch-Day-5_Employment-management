@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#171923">
+  <title>Employee Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <a href="index.html" class="brand">eh<span>.</span></a>
+
+    <p class="nav-heading">WORKSPACE</p>
+
+    <nav class="navigation">
+      <a href="#overview" class="nav-link active">
+        <span class="nav-icon">▦</span> Overview
+      </a>
+      <a href="#employees" class="nav-link">
+        <span class="nav-icon">♙</span> Employees
+      </a>
+      <a href="#departments" class="nav-link">
+        <span class="nav-icon">▤</span> Departments
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="admin-avatar">A</div>
+      <div class="admin-info">
+        <strong>Administrator</strong>
+        <small>Workspace admin</small>
+      </div>
+      <button id="logoutBtn" class="logout-btn" type="button"
+        aria-label="Log out" title="Log out">↪</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">WORKSPACE / OVERVIEW</p>
+        <h1>Good to see you! <span class="wave">✳</span></h1>
+        <p class="subtitle">Here's what's happening with your team.</p>
+      </div>
+
+      <div class="topbar-actions">
+        <span class="date-label" id="todayDate">Team workspace</span>
+        <button id="addEmployeeBtn" class="primary-btn" type="button">
+          <span>＋</span> Add employee
+        </button>
+      </div>
+    </header>
+
+    <section class="stats-grid" id="overview">
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-purple">♙</span>
+          <span class="stat-label">TEAM SIZE</span>
+        </div>
+        <h2 id="totalEmployees">—</h2>
+        <p>Total employees</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-green">✓</span>
+          <span class="stat-label">ACTIVE</span>
+        </div>
+        <h2 id="activeEmployees">—</h2>
+        <p>Active team members</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-orange">▤</span>
+          <span class="stat-label">TEAMS</span>
+        </div>
+        <h2 id="totalDepartments">—</h2>
+        <p>Unique departments</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-icon icon-blue">₹</span>
+          <span class="stat-label">PAYROLL</span>
+        </div>
+        <h2 id="averageSalary">—</h2>
+        <p>Average monthly salary</p>
+      </article>
+    </section>
+
+    <section class="panel" id="employees">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">YOUR PEOPLE</p>
+          <h2>Meet the team</h2>
+          <p class="section-description">
+            Manage employee profiles and team information.
+          </p>
+        </div>
+        <span id="resultCount" class="result-count">Loading...</span>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span>⌕</span>
+          <input id="searchInput" type="search"
+            placeholder="Search by name, email or role..."
+            aria-label="Search employees">
+        </div>
+
+        <select id="departmentFilter" aria-label="Filter department">
+          <option value="">All departments</option>
+        </select>
+
+        <select id="statusFilter" aria-label="Filter status">
+          <option value="">All statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="On Leave">On Leave</option>
+        </select>
+
+        <select id="sortSelect" aria-label="Sort employees">
+          <option value="name">Name: A–Z</option>
+          <option value="salaryHigh">Salary: High–Low</option>
+          <option value="salaryLow">Salary: Low–High</option>
+        </select>
+      </div>
+
+      <div id="loadingState" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading your team...</p>
+      </div>
+
+      <div id="employeeGrid" class="employee-grid"></div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">⌕</div>
+        <h3>No employees found</h3>
+        <p>Try changing your search or filter.</p>
+      </div>
+
+      <p id="errorState" class="error-state hidden" role="alert"></p>
+    </section>
+
+    <section class="panel" id="departments">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">ORGANIZATION</p>
+          <h2>Department overview</h2>
+          <p class="section-description">
+            Explore how your team is distributed.
+          </p>
+        </div>
+      </div>
+      <div id="departmentOverview" class="department-grid"></div>
+    </section>
+
+    <footer>Employee Hub · People first, always.</footer>
+  </main>
+
+  <!-- Add / Edit employee modal -->
+
+  <div id="employeeModal" class="modal hidden">
+    <div class="modal-card" role="dialog"
+      aria-modal="true" aria-labelledby="modalTitle">
+
+      <div class="modal-heading">
+        <div>
+          <p class="eyebrow">EMPLOYEE INFORMATION</p>
+          <h2 id="modalTitle">Add employee</h2>
+          <p class="section-description">
+            Fill in the details below.
+          </p>
+        </div>
+        <button id="closeModalBtn" class="close-btn"
+          type="button" aria-label="Close">×</button>
+      </div>
+
+      <form id="employeeForm">
+        <input type="hidden" id="employeeId">
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="nameInput">Full name</label>
+            <input id="nameInput" required maxlength="100"
+              placeholder="Employee name">
+          </div>
+
+          <div class="form-field">
+            <label for="emailInput">Email address</label>
+            <input id="emailInput" type="email" required
+              placeholder="name@example.com">
+          </div>
+
+          <div class="form-field">
+            <label for="departmentInput">Department</label>
+            <input id="departmentInput" required maxlength="80"
+              placeholder="Engineering">
+          </div>
+
+          <div class="form-field">
+            <label for="positionInput">Job title</label>
+            <input id="positionInput" required maxlength="100"
+              placeholder="Frontend Developer">
+          </div>
+
+          <div class="form-field">
+            <label for="salaryInput">Monthly salary (₹)</label>
+            <input id="salaryInput" type="number"
+              min="0" step="1" placeholder="Not available">
+          </div>
+
+          <div class="form-field">
+            <label for="statusInput">Employment status</label>
+            <select id="statusInput">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+          </div>
+        </div>
+
+        <p id="formMessage" class="error-state" role="alert"></p>
+
+        <div class="form-actions">
+          <button type="button" id="cancelBtn" class="secondary-btn">
+            Cancel
+          </button>
+          <button type="submit" class="primary-btn">
+            Save employee
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Employee details modal -->
+
+  <div id="detailsModal" class="modal hidden">
+    <div class="modal-card" role="dialog"
+      aria-modal="true" aria-labelledby="detailsTitle">
+      <div class="modal-heading">
+        <div>
+          <p class="eyebrow">PROFILE</p>
+          <h2 id="detailsTitle">Employee details</h2>
+        </div>
+        <button id="closeDetailsBtn" class="close-btn"
+          type="button" aria-label="Close">×</button>
+      </div>
+      <div id="employeeDetails"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/employees.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
