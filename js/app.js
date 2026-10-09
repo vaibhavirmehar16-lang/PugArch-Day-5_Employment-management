@@ -1,8 +1,8 @@
 
-const DEMO_AUTH_KEY = "employeeHubLoggedIn";
-const DEMO_AUTH_VALUE = "demo";
+const DASHBOARD_DEMO_AUTH_KEY = "employeeHubLoggedIn";
+const DASHBOARD_DEMO_AUTH_VALUE = "demo";
 
-if (sessionStorage.getItem(DEMO_AUTH_KEY) !== DEMO_AUTH_VALUE) {
+if (sessionStorage.getItem(DASHBOARD_DEMO_AUTH_KEY) !== DASHBOARD_DEMO_AUTH_VALUE) {
     window.location.replace("login.html");
 }
 
@@ -20,7 +20,7 @@ const logoutBtn = document.querySelector("#logoutBtn");
 
 if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
-        sessionStorage.removeItem(DEMO_AUTH_KEY);
+        sessionStorage.removeItem(DASHBOARD_DEMO_AUTH_KEY);
         sessionStorage.removeItem("employeeHubUserEmail");
         window.location.href = "login.html";
     });

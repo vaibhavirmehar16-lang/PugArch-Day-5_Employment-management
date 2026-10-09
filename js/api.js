@@ -1,5 +1,6 @@
 
 const API_URL = "https://dummyjson.com/users?limit=30";
+const API_TIMEOUT_MS = 15000;
 const INDIAN_EMPLOYEE_NAMES = [
     "Aarav Sharma",
     "Priya Verma",
@@ -34,22 +35,33 @@ const INDIAN_EMPLOYEE_NAMES = [
 ];
 
 async function fetchEmployees() {
-    const response = await fetch(API_URL);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-    if (!response.ok) {
-        throw new Error("Unable to load employees.");
+    try {
+        const response = await fetch(API_URL, { signal: controller.signal });
+
+        if (!response.ok) {
+            throw new Error(`Unable to load employees (HTTP ${response.status}).`);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.users)) {
+            throw new Error("Employee API returned an invalid response.");
+        }
+
+        return data.users.map((user, index) => ({
+            id: user.id,
+            name: INDIAN_EMPLOYEE_NAMES[index] || `${user.firstName} ${user.lastName}`,
+            email: user.email,
+            department: user.company.department || "General",
+            position: user.company.title || "Team Member",
+            salary: null,
+            status: "Active",
+            image: user.image
+        }));
+    } finally {
+        clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-
-    return data.users.map((user, index) => ({
-        id: user.id,
-        name: INDIAN_EMPLOYEE_NAMES[index] || `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        department: user.company.department || "General",
-        position: user.company.title || "Team Member",
-        salary: null,
-        status: "Active",
-        image: user.image
-    }));
 }
